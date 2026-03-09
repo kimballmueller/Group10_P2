@@ -1,52 +1,103 @@
+#
+# -------------------------------------------------------
+# Team Members:
+# Kimball Mueller
+# Adriel Makaio Villarreal
+# Jane Jeppesen
+#
+# A6 Soccer Teams Program
+# -------------------------------------------------------
 
-#Author Adriel Makaio Villarreal
-# Step 4-5
+import random
+import math
 
-import random, math
+# Jane's Section
+# Get team name input
 
 
-def play_game(sHometeam, sAwayTeam):
+def get_home_team():
 
-    sHometeam= 0
-    sAwayTeam = 0
+    sTeamName = input("Enter the name of your home team: ")
+    iNumGames = int(input(f"Enter the number of games that {sTeamName} will play: "))
 
-    while not(sHometeam == sAwayTeam) :
-        iHomeScore = random.randrange(0,9)
-        iAwayScore = random.randrange(0.9)
+    return sTeamName, iNumGames
 
-    if iHomeScore > iAwayScore :
+# Kimball's Section
+# Get team name input
+
+def get_opponent(game_number):
+
+    sAwayTeam = input(f"\nEnter the name of the away team for game {game_number}: ")
+    return sAwayTeam
+
+
+# ---- Adriel's section (fixed but same logic * Kimball Mueller) ----
+def play_game(sHometeam, sAwayTeam, dictTeams):
+
+    # generate scores
+    iHomeScore = random.randrange(0, 9)
+    iAwayScore = random.randrange(0, 9)
+
+    # prevent ties
+    while iHomeScore == iAwayScore:
+        iHomeScore = random.randrange(0, 9)
+        iAwayScore = random.randrange(0, 9)
+
+    print(f"{sHometeam}'s score: {iHomeScore} - {sAwayTeam}'s score: {iAwayScore}")
+
+    if iHomeScore > iAwayScore:
+        dictTeams["Won Against"].append(sAwayTeam)
         return "W"
-    else :
+    else:
+        dictTeams["Lost Against"].append(sAwayTeam)
         return "L"
-    
 
 
-def display_final_record(iwins, iloss, lstOfTeamsWon, lstOfTeamsLost) :
+# ---- Adriel's display logic adapted -  fixed but same logic * Kimball Mueller ----
+def display_results(home_team, iwins, iloss, dictTeams, totalGames):
 
-    #how are we storing whether we win or loose in the team dict, is the input a list a
-    #repating call.
+    lstOfTeamsWon = dictTeams["Won Against"]
+    lstOfTeamsLost = dictTeams["Lost Against"]
 
-
-    print("\nTeam Wons agaist:")
+    print("\nTeams won against:")
     print(*lstOfTeamsWon, sep="\n")
 
-
-    print("\nTeam Lost agaist:")
+    print("\nTeams lost against:")
     print(*lstOfTeamsLost, sep="\n")
 
+    print(f"\nFinal season record {iwins} - {iloss}")
 
-    print(f"Final season record {iwins} - {iloss}")
-    totalGames = iwins + iloss
+    if iwins >= math.floor((totalGames * .75)):
+        print("Qualified for the NCAA Soccer Tournament!")
 
-    if iwins >= math.floor((totalGames * .75)) :
-        print("Qualified for the NCAA Soccer Tournament!\n")
+    elif iwins >= math.floor((totalGames * .50)):
+        print("You had a good season.")
 
-    elif iwins >= math.floor((totalGames * .50)) :
-        print("You had a good season.\n")
-
-    else :
-        print("Your team needs to practice!\n")
+    else:
+        print("Your team needs to practice!")
 
 
-  
-    
+def main():
+
+    dictTeams = {"Won Against": [], "Lost Against": []}
+
+    wins = 0
+    losses = 0
+
+    sTeamName, iNumGames = get_home_team()
+
+    for game in range(1, iNumGames + 1):
+
+        sAwayTeam = get_opponent(game)
+
+        result = play_game(sTeamName, sAwayTeam, dictTeams)
+
+        if result == "W":
+            wins += 1
+        else:
+            losses += 1
+
+    display_results(sTeamName, wins, losses, dictTeams, iNumGames)
+
+
+main()
